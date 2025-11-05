@@ -18,4 +18,7 @@ void limparBuffer(void);
 // Carrega dados do arquivo binário para um vetor de Alimento
 int carregar_binario(const char *nomeArquivo, Alimento *vetor, int max);
 
+// Normaliza texto, removendo acentos e deixando tudo em minúsculas
+void normalizarString(const char *entrada, char *saida);
+
 #endif

@@ -1,104 +1,163 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "listaligada.h"
+#include <strings.h>
+#include "utilidades.h"
 
-// Função auxiliar pra criar nó de alimento
+// compara strings ignorando maiúsc/minúsculas
+static int cmp_icase(const char *a, const char *b)
+{
+    while (*a && *b)
+    {
+        unsigned char ca = (unsigned char)tolower((unsigned char)*a);
+        unsigned char cb = (unsigned char)tolower((unsigned char)*b);
+        if (ca != cb)
+            return (ca < cb) ? -1 : 1;
+        a++;
+        b++;
+    }
+    if (*a == *b)
+        return 0;
+    return (*a == '\0') ? -1 : 1;
+}
+
+// cria nó de alimento
 static AlimentoNode *novoNoAlimento(Alimento *a)
 {
     AlimentoNode *n = (AlimentoNode *)malloc(sizeof(AlimentoNode));
+    if (!n)
+        exit(1);
     n->dado = a;
     n->prox = NULL;
     return n;
 }
 
-// Insere categoria em ordem alfabética
 CategoriaNode *inserirCategoriaOrdenada(CategoriaNode **inicio, const char *nome)
 {
+    // 1) se já existir com o MESMO nome (ignora caixa), retorna o existente
+    CategoriaNode *p = *inicio, *ant = NULL;
+    while (p)
+    {
+        int cmp = cmp_icase(nome, p->nome);
+        if (cmp == 0)
+        {
+            return p; // já existe
+        }
+        // se o nome novo deve vir antes de p, paramos em 'ant'
+        if (cmp < 0)
+            break;
+        ant = p;
+        p = p->prox;
+    }
+
+    // 2) não existe: criar e inserir na posição (mantendo ordenação)
     CategoriaNode *novo = (CategoriaNode *)malloc(sizeof(CategoriaNode));
-    strcpy(novo->nome, nome);
+    if (!novo)
+        exit(1);
+    strncpy(novo->nome, nome, sizeof(novo->nome) - 1);
+    novo->nome[sizeof(novo->nome) - 1] = '\0';
     novo->listaAlimentos = NULL;
-    novo->prox = NULL;
+    novo->prox = p;
 
-    // Se lista vazia ou é menor que o primeiro
-    if (*inicio == NULL || strcmp(nome, (*inicio)->nome) < 0)
+    if (ant == NULL)
     {
-        novo->prox = *inicio;
-        *inicio = novo;
-        return novo;
+        *inicio = novo; // no começo
     }
-
-    // Busca posição correta
-    CategoriaNode *atual = *inicio;
-    while (atual->prox != NULL && strcmp(nome, atual->prox->nome) > 0)
+    else
     {
-        atual = atual->prox;
+        ant->prox = novo; // entre 'ant' e 'p'
     }
-
-    // Insere entre atual e o próximo
-    novo->prox = atual->prox;
-    atual->prox = novo;
     return novo;
 }
 
-// Insere alimento em ordem alfabética na categoria
-void inserirAlimentoOrdenado(CategoriaNode *categoria, Alimento *novo)
+// Buscar categoria pelo nome (com normalização)
+CategoriaNode *buscarCategoria(CategoriaNode *inicio, const char *nomeDigitado)
 {
-    AlimentoNode *no = novoNoAlimento(novo);
+    char nomeProc[100], nomeCat[100];
+    normalizarString(nomeDigitado, nomeProc); // Normaliza o nome digitado
 
-    // Se a lista está vazia ou vem antes do primeiro
-    if (categoria->listaAlimentos == NULL ||
-        strcmp(novo->descricao_alimento, categoria->listaAlimentos->dado->descricao_alimento) < 0)
-    {
-        no->prox = categoria->listaAlimentos;
-        categoria->listaAlimentos = no;
-        return;
-    }
-
-    // Busca posição correta na lista ligada
-    AlimentoNode *atual = categoria->listaAlimentos;
-    while (atual->prox != NULL &&
-           strcmp(novo->descricao_alimento, atual->prox->dado->descricao_alimento) > 0)
-    {
-        atual = atual->prox;
-    }
-
-    // Insere o nó na posição
-    no->prox = atual->prox;
-    atual->prox = no;
-}
-
-// Buscar categoria pelo nome
-CategoriaNode *buscarCategoria(CategoriaNode *inicio, const char *nome)
-{
     while (inicio != NULL)
     {
-        if (strcmp(inicio->nome, nome) == 0)
+        normalizarString(inicio->nome, nomeCat); // Normaliza o nome da categoria
+        if (strcmp(nomeProc, nomeCat) == 0)
             return inicio;
         inicio = inicio->prox;
     }
     return NULL;
 }
 
-// Listar categorias
+int removerCategoria(CategoriaNode **inicio, const char *nome)
+{
+    CategoriaNode *p = *inicio, *ant = NULL;
+    while (p && cmp_icase(p->nome, nome) != 0)
+    {
+        ant = p;
+        p = p->prox;
+    }
+    if (!p)
+        return 0; // não achou
+
+    // desconecta
+    if (ant)
+        ant->prox = p->prox;
+    else
+        *inicio = p->prox;
+
+    // libera lista de alimentos
+    AlimentoNode *a = p->listaAlimentos;
+    while (a)
+    {
+        AlimentoNode *tmp = a;
+        a = a->prox;
+        free(tmp);
+    }
+    free(p);
+    return 1;
+}
+
 void listarCategorias(CategoriaNode *inicio)
 {
     printf("\nCategorias cadastradas:\n");
-    while (inicio != NULL)
+    while (inicio)
     {
         printf("- %s\n", inicio->nome);
         inicio = inicio->prox;
     }
 }
 
-// Listar alimentos de uma categoria
+void inserirAlimentoOrdenado(CategoriaNode *categoria, Alimento *novo)
+{
+    AlimentoNode *no = novoNoAlimento(novo);
+
+    // início da lista ou antes do primeiro (ordem alfabética pela descrição)
+    if (categoria->listaAlimentos == NULL ||
+        cmp_icase(novo->descricao_alimento, categoria->listaAlimentos->dado->descricao_alimento) < 0)
+    {
+        no->prox = categoria->listaAlimentos;
+        categoria->listaAlimentos = no;
+        return;
+    }
+
+    // encontra posição
+    AlimentoNode *at = categoria->listaAlimentos;
+    while (at->prox &&
+           cmp_icase(novo->descricao_alimento, at->prox->dado->descricao_alimento) > 0)
+    {
+        at = at->prox;
+    }
+    no->prox = at->prox;
+    at->prox = no;
+}
+
 void listarAlimentos(CategoriaNode *categoria)
 {
     printf("\nAlimentos da categoria: %s\n", categoria->nome);
     AlimentoNode *a = categoria->listaAlimentos;
-    while (a != NULL)
+    while (a)
     {
-        printf("  %d - %s (%.2fkcal | %.2fg proteina)\n",
+        printf("  %d - %s (%.2f kcal | %.2f g proteína)\n",
                a->dado->numero_alimento,
                a->dado->descricao_alimento,
                a->dado->energia_kcal,
@@ -107,74 +166,39 @@ void listarAlimentos(CategoriaNode *categoria)
     }
 }
 
-// Remover categoria inteira
-int removerCategoria(CategoriaNode **inicio, const char *nome)
+int removerAlimento(CategoriaNode *categoria, int numeroAlimento)
 {
-    CategoriaNode *atual = *inicio, *ant = NULL;
-    while (atual != NULL && strcmp(atual->nome, nome) != 0)
+    AlimentoNode *p = categoria->listaAlimentos, *ant = NULL;
+    while (p && p->dado->numero_alimento != numeroAlimento)
     {
-        ant = atual;
-        atual = atual->prox;
+        ant = p;
+        p = p->prox;
     }
-    if (!atual)
+    if (!p)
         return 0;
 
-    // Remove da lista encadeada
-    if (ant == NULL)
-        *inicio = atual->prox;
+    if (ant)
+        ant->prox = p->prox;
     else
-        ant->prox = atual->prox;
-
-    // Libera alimentos daquela categoria
-    AlimentoNode *a = atual->listaAlimentos;
-    while (a)
-    {
-        AlimentoNode *tmp = a;
-        a = a->prox;
-        free(tmp);
-    }
-    free(atual);
+        categoria->listaAlimentos = p->prox;
+    free(p);
     return 1;
 }
 
-// Remover alimento de uma categoria
-int removerAlimento(CategoriaNode *categoria, int numero)
-{
-    AlimentoNode *atual = categoria->listaAlimentos;
-    AlimentoNode *ant = NULL;
-
-    while (atual != NULL && atual->dado->numero_alimento != numero)
-    {
-        ant = atual;
-        atual = atual->prox;
-    }
-    if (!atual)
-        return 0;
-
-    if (ant == NULL)
-        categoria->listaAlimentos = atual->prox;
-    else
-        ant->prox = atual->prox;
-
-    free(atual);
-    return 1;
-}
-
-// Liberar toda a memória da lista ligada
 void liberarTudo(CategoriaNode *inicio)
 {
-    while (inicio != NULL)
+    while (inicio)
     {
-        CategoriaNode *tmpCat = inicio;
+        CategoriaNode *cx = inicio;
         inicio = inicio->prox;
 
-        AlimentoNode *a = tmpCat->listaAlimentos;
-        while (a != NULL)
+        AlimentoNode *a = cx->listaAlimentos;
+        while (a)
         {
-            AlimentoNode *tmpAli = a;
+            AlimentoNode *t = a;
             a = a->prox;
-            free(tmpAli);
+            free(t);
         }
-        free(tmpCat);
+        free(cx);
     }
 }
