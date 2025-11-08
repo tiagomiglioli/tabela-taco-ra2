@@ -3,6 +3,34 @@
 
 #include "alimento.h"
 
+// =======================================================
+// MUDANÇA (Requisito 1: Implementar Enum)
+// =======================================================
+// 1. O Enum (são 15 categorias)
+typedef enum {
+    CAT_CEREAIS,
+    CAT_VERDURAS,
+    CAT_FRUTAS,
+    CAT_GORDURAS,
+    CAT_PESCADOS,
+    CAT_CARNES,
+    CAT_LEITE,
+    CAT_BEBIDAS,
+    CAT_OVOS,
+    CAT_ACUCARADOS,
+    CAT_MISCELANEAS,
+    CAT_INDUSTRIALIZADOS,
+    CAT_PREPARADOS,
+    CAT_LEGUMINOSAS,
+    CAT_NOZES,
+    CAT_INVALIDA // Para erros
+} EnumCategoria;
+
+// 2. Protótipo da função de conversão
+EnumCategoria getEnumPeloNome(const char* nome);
+// =======================================================
+
+
 // Nó simples de alimento em lista ligada
 typedef struct AlimentoNode
 {
@@ -15,6 +43,13 @@ typedef struct CategoriaNode
 {
     char nome[100];
     AlimentoNode *listaAlimentos;
+    
+    // =======================================================
+    // MUDANÇA (Requisito 1: Adicionar campo do Enum)
+    // =======================================================
+    EnumCategoria id_enum;
+    // =======================================================
+    
     struct CategoriaNode *prox;
 } CategoriaNode;
 

@@ -36,32 +36,38 @@ Alimento interpretar_alimento(char *linha)
         coluna++;
         token = strtok(NULL, ";");
     }
-    return a;
+    return a; // Este 'return' é único
 }
 
+// =======================================================
+// MUDANÇA (Requisito 10: Return único)
+// =======================================================
 int ler_csv(Alimento *alimentos)
 {
+    int count = 0; // <-- Variável de resultado (começa em 0/falha)
     FILE *arq = fopen("taco.csv", "r");
+    
     if (arq == NULL)
     {
         printf("Erro ao abrir taco.csv!\n");
-        return 0;
     }
-
-    int count = 0;
-    char linha[300];
-
-    // Pular cabeçalho
-    fgets(linha, sizeof(linha), arq);
-
-    while (fgets(linha, sizeof(linha), arq) != NULL && count < MAX_ALIMENTOS)
+    else
     {
-        alimentos[count] = interpretar_alimento(linha);
-        count++;
-    }
+        char linha[300];
 
-    fclose(arq);
-    return count;
+        // Pular cabeçalho
+        fgets(linha, sizeof(linha), arq);
+
+        while (fgets(linha, sizeof(linha), arq) != NULL && count < MAX_ALIMENTOS)
+        {
+            alimentos[count] = interpretar_alimento(linha);
+            count++; // 'count' agora é o resultado de sucesso
+        }
+
+        fclose(arq);
+    }
+    
+    return count; // <-- Return Único
 }
 
 void gravar_binario(Alimento *alimentos, int qtd)
@@ -70,7 +76,7 @@ void gravar_binario(Alimento *alimentos, int qtd)
     if (arq == NULL)
     {
         printf("Erro ao criar dados.bin!\n");
-        exit(1);
+        exit(1); // 'exit' é permitido pela Regra 10
     }
 
     fwrite(alimentos, sizeof(Alimento), qtd, arq);

@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include "alimento.h"
+#include "utilidades.h"
 
 int main()
 {
+
     Alimento alimentos[MAX_ALIMENTOS];
     int qtd = ler_csv(alimentos);
 

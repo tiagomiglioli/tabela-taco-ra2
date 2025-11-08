@@ -20,7 +20,7 @@ int ler_inteiro(void)
     int valor;
     scanf("%d", &valor);
     limparBuffer();
-    return valor;
+    return valor; // Único
 }
 
 // Lê um float do teclado
@@ -29,7 +29,7 @@ float ler_float(void)
     float valor;
     scanf("%f", &valor);
     limparBuffer();
-    return valor;
+    return valor; // Único
 }
 
 // Limpa o buffer do teclado para evitar problemas com fgets
@@ -40,19 +40,25 @@ void limparBuffer(void)
         ;
 }
 
-// Carrega alimentos do arquivo binário para o vetor
+// =======================================================
+// MUDANÇA (Requisito 10: Return único)
+// =======================================================
 int carregar_binario(const char *nomeArquivo, Alimento *vetor, int max)
 {
+    int qtd = 0; // <-- Variável de resultado (começa em 0/falha)
     FILE *arq = fopen(nomeArquivo, "rb");
+    
     if (arq == NULL)
     {
         printf("Erro ao abrir %s.\n", nomeArquivo);
-        return 0;
     }
-
-    int qtd = fread(vetor, sizeof(Alimento), max, arq);
-    fclose(arq);
-    return qtd;
+    else
+    {
+        qtd = fread(vetor, sizeof(Alimento), max, arq); // Seta o resultado
+        fclose(arq);
+    }
+    
+    return qtd; // <-- Return Único
 }
 
 // Remove acentos, substitui vírgulas e converte para minúsculas
