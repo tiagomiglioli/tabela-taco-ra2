@@ -99,7 +99,7 @@ static int categoriasParaVetor(CategoriaNode *lista, Alimento *out, int max)
 
 int main(void)
 {
-    setlocale(LC_ALL, "Portuguese_Brazil.1252");
+    configurar_console();
 
     // 1) Carregar dados do binário
     Alimento vetor[MAX_ALIMENTOS];

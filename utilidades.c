@@ -3,6 +3,13 @@
 #include <ctype.h>
 #include <string.h>
 
+// Configuração de codificação UTF-8
+#ifdef _WIN32
+#include <windows.h> // Para chamar SetConsoleOutputCP no Windows
+#else
+#include <locale.h> // Para chamar setlocale no Unix/Linux
+#endif
+
 // Remove o \n ao final de uma string lida com fgets
 void lerString(char *str, int tamanho)
 {
@@ -128,4 +135,15 @@ void normalizarString(const char *entrada, char *saida)
             saida[j++] = saida[i];
     }
     saida[j] = '\0';
+}
+
+void configurar_console(void) {
+#ifdef _WIN32
+// Configura UTF-8 para o console Windows
+printf("windows\n");
+SetConsoleOutputCP(CP_UTF8);
+#else
+// Para sistemas Unix/Linux
+setlocale(LC_ALL, "pt_BR.UTF-8");
+#endif
 }

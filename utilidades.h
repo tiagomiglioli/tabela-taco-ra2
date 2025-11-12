@@ -2,6 +2,13 @@
 #define UTILIDADES_H
 
 #include "alimento.h"
+#include <stdio.h>
+// Configuração de codificação UTF-8
+#ifdef _WIN32
+#include <windows.h> // Para chamar SetConsoleOutputCP no Windows
+#else
+#include <locale.h> // Para chamar setlocale no Unix/Linux
+#endif
 
 // Lê string com segurança (remove \n do fgets)
 void lerString(char *str, int tamanho);
@@ -20,5 +27,8 @@ int carregar_binario(const char *nomeArquivo, Alimento *vetor, int max);
 
 // Normaliza texto, removendo acentos e deixando tudo em minúsculas
 void normalizarString(const char *entrada, char *saida);
+
+//para exibir o utf-8 no console
+void configurar_console(void);
 
 #endif
