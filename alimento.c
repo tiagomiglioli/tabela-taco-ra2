@@ -39,9 +39,7 @@ Alimento interpretar_alimento(char *linha)
     return a; // Este 'return' é único
 }
 
-// =======================================================
-// MUDANÇA (Requisito 10: Return único)
-// =======================================================
+
 int ler_csv(Alimento *alimentos)
 {
     int count = 0; // <-- Variável de resultado (começa em 0/falha)

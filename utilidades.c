@@ -47,9 +47,7 @@ void limparBuffer(void)
         ;
 }
 
-// =======================================================
-// MUDANÇA (Requisito 10: Return único)
-// =======================================================
+
 int carregar_binario(const char *nomeArquivo, Alimento *vetor, int max)
 {
     int qtd = 0; // <-- Variável de resultado (começa em 0/falha)

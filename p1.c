@@ -5,11 +5,11 @@
 int main()
 {
     Alimento alimentos[MAX_ALIMENTOS];
-    int qtd = ler_csv(alimentos);
+    int qtd = ler_csv(alimentos);//le o csv
 
     if (qtd > 0)
     {
-        gravar_binario(alimentos, qtd);
+        gravar_binario(alimentos, qtd); //grava o binario
         printf("Arquivo dados.bin gerado com sucesso contendo %d alimentos\n", qtd);
     }
     else

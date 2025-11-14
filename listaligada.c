@@ -62,9 +62,7 @@ EnumCategoria getEnumPeloNome(const char* nome)
     return id;
 }
 
-// =======================================================
-// MUDANÇA (Requisito 10: Return único)
-// =======================================================
+
 CategoriaNode *inserirCategoriaOrdenada(CategoriaNode **inicio, const char *nome)
 {
     CategoriaNode *p = *inicio, *ant = NULL;
@@ -124,9 +122,7 @@ CategoriaNode *inserirCategoriaOrdenada(CategoriaNode **inicio, const char *nome
     return resultado; // <-- Return Único
 }
 
-// =======================================================
-// MUDANÇA (Requisito 10: Return único)
-// =======================================================
+
 CategoriaNode *buscarCategoria(CategoriaNode *inicio, const char *nomeDigitado)
 {
     char nomeProc[100], nomeCat[100];
@@ -152,9 +148,7 @@ CategoriaNode *buscarCategoria(CategoriaNode *inicio, const char *nomeDigitado)
     return resultado; // <-- Return Único
 }
 
-// =======================================================
-// MUDANÇA (Requisito 10: Return único)
-// =======================================================
+
 int removerCategoria(CategoriaNode **inicio, const char *nome)
 {
     int sucesso = 0; // <-- Variável de resultado
@@ -257,9 +251,7 @@ void listarAlimentos(CategoriaNode *categoria)
     }
 }
 
-// =======================================================
-// MUDANÇA (Requisito 10: Return único)
-// =======================================================
+
 int removerAlimento(CategoriaNode *categoria, int numeroAlimento)
 {
     int sucesso = 0; // <-- Variável de resultado

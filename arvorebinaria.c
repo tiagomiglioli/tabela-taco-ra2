@@ -16,9 +16,7 @@ static NoArvore *criarNo(float chave, Alimento *ref)
     return no;
 }
 
-// =======================================================
-// MUDANÇA (Requisito 10: Return único)
-// =======================================================
+
 static NoArvore *inserir(NoArvore *raiz, float chave, Alimento *ref)
 {
     NoArvore *resultado = NULL; // <-- Variável de resultado
@@ -68,9 +66,7 @@ NoArvore *criarArvoreProteina(CategoriaNode *categoria)
     return raiz; // Este 'return' é único
 }
 
-// =======================================================
-// MUDANÇA (Requisito 10: Return único)
-// =======================================================
+
 void exibirDecrescente(NoArvore *raiz)
 {
     if (raiz != NULL) // <-- Lógica invertida
@@ -82,9 +78,7 @@ void exibirDecrescente(NoArvore *raiz)
     // Return implícito e único no final
 }
 
-// =======================================================
-// MUDANÇA (Requisito 10: Return único)
-// =======================================================
+
 void exibirEntreFaixa(NoArvore *raiz, float min, float max)
 {
     if (raiz != NULL) // <-- Lógica invertida
@@ -101,9 +95,7 @@ void exibirEntreFaixa(NoArvore *raiz, float min, float max)
     // Return implícito e único no final
 }
 
-// =======================================================
-// MUDANÇA (Requisito 10: Return único)
-// =======================================================
+
 void liberarArvore(NoArvore *raiz)
 {
     if (raiz != NULL) // <-- Lógica invertida

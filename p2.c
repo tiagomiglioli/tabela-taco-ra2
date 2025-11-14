@@ -240,7 +240,7 @@ int main(void)
             if (!cat)
                 break;
 
-            listarAlimentos(cat);
+            listarAlimentos(cat); //lista para ser melhor para o usuario
 
             printf("Número do alimento a ser removido: ");
             int num = ler_inteiro();
